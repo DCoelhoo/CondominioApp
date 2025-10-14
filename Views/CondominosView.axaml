@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="https://github.com/avaloniaui"
+    x:Class="CondominioApp.Views.CondominosView"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:CondominioApp.ViewModels"
+    x:DataType="viewmodels:CondominosViewModel"
+    Width="800" Height="500"
+    Background="#F2F2F2"
+    Title="Gestão de Condomínio - Lista de Condóminos">
+
+    <Design.DataContext>
+        <viewmodels:CondominosViewModel />
+    </Design.DataContext>
+
+    <DockPanel Margin="10">
+        <!-- Botão Atualizar -->
+        <Button DockPanel.Dock="Top"
+            Content="Atualizar"
+            HorizontalAlignment="Right"
+            Padding="10,4"
+            Margin="0,0,0,10"
+            Command="{Binding AtualizarCommand}" />
+
+        <!-- Tabela -->
+        <DataGrid
+            AutoGenerateColumns="True"
+            ItemsSource="{Binding Condominos}"
+            IsReadOnly="False"
+            GridLinesVisibility="All"
+            HeadersVisibility="All"
+            Background="White"
+            RowEditEnded="DataGrid_RowEditEnded"
+            BorderBrush="#CCCCCC"
+            BorderThickness="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Nome" Binding="{Binding Nome, Mode=TwoWay}" Width="250" />
+                <DataGridTextColumn Header="Fração" Binding="{Binding Fracao}" Width="120"
+                    IsReadOnly="True" />
+                <DataGridTextColumn Header="Telefone" Binding="{Binding Telefone, Mode=TwoWay}"
+                    Width="150" />
+                <DataGridTextColumn Header="Email" Binding="{Binding Email, Mode=TwoWay}"
+                    Width="200" />
+                <DataGridTextColumn Header="Saldo (€)"
+                    Binding="{Binding Saldo, Mode=TwoWay, StringFormat=F2}" Width="100" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</Window>

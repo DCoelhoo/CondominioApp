@@ -1,19 +1,35 @@
+using System;
 using System.Collections.ObjectModel;
-using CondominioApp.Models;
-using CondominioApp.Data;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CondominioApp.Data;
+using CondominioApp.Models;
 
 namespace CondominioApp.ViewModels
 {
     public partial class CondominosViewModel : ObservableObject
     {
-        public ObservableCollection<Condomino> Condominos { get; set; }
+        [ObservableProperty]
+        private ObservableCollection<Condomino> condominos;
+
+        [ObservableProperty]
+        private Condomino? condominoSelecionado;
 
         public CondominosViewModel()
         {
             using var db = new AppDbContext();
-            var lista = db.Condominos.ToList();
-            Condominos = new ObservableCollection<Condomino>(lista);
+            Condominos = new ObservableCollection<Condomino>(db.Condominos.ToList());
+        }
+
+        [RelayCommand]
+        private void AbrirPerfil()
+        {
+            if (CondominoSelecionado == null)
+                return;
+
+            // TODO: Navegar para a página de perfil
+            Console.WriteLine($"Abrindo perfil de {CondominoSelecionado.Nome} ({CondominoSelecionado.Fracao})");
         }
     }
 }

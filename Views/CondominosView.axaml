@@ -1,49 +1,40 @@
 <Window xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="https://github.com/avaloniaui"
     x:Class="CondominioApp.Views.CondominosView"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:CondominioApp.ViewModels"
-    x:DataType="viewmodels:CondominosViewModel"
     Width="800" Height="500"
-    Background="#F2F2F2"
+    Background="White"
     Title="Gestão de Condomínio - Lista de Condóminos">
 
-    <Design.DataContext>
-        <viewmodels:CondominosViewModel />
-    </Design.DataContext>
-
     <DockPanel Margin="10">
-        <!-- Botão Atualizar -->
-        <Button DockPanel.Dock="Top"
-            Content="Atualizar"
-            HorizontalAlignment="Right"
-            Padding="10,4"
-            Margin="0,0,0,10"
-            Command="{Binding AtualizarCommand}" />
-
-        <!-- Tabela -->
-        <DataGrid
-            AutoGenerateColumns="True"
-            ItemsSource="{Binding Condominos}"
-            IsReadOnly="False"
-            GridLinesVisibility="All"
-            HeadersVisibility="All"
-            Background="White"
-            RowEditEnded="DataGrid_RowEditEnded"
-            BorderBrush="#CCCCCC"
-            BorderThickness="1">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Nome" Binding="{Binding Nome, Mode=TwoWay}" Width="250" />
-                <DataGridTextColumn Header="Fração" Binding="{Binding Fracao}" Width="120"
-                    IsReadOnly="True" />
-                <DataGridTextColumn Header="Telefone" Binding="{Binding Telefone, Mode=TwoWay}"
-                    Width="150" />
-                <DataGridTextColumn Header="Email" Binding="{Binding Email, Mode=TwoWay}"
-                    Width="200" />
-                <DataGridTextColumn Header="Saldo (€)"
-                    Binding="{Binding Saldo, Mode=TwoWay, StringFormat=F2}" Width="100" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ListBox ItemsSource="{Binding Condominos}"
+                Background="#F9FAFB"
+                BorderBrush="#DDDDDD"
+                BorderThickness="1"
+                SelectionMode="Single"
+                SelectedItem="{Binding CondominoSelecionado, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            Margin="4"
+                            Padding="10"
+                            Background="White"
+                            BorderBrush="#E5E7EB"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                            <Grid ColumnDefinitions="2*,Auto" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Nome}" FontWeight="SemiBold"
+                                    VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding Fracao}" Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Foreground="#444" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
     </DockPanel>
 </Window>

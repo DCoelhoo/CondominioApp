@@ -1,6 +1,6 @@
 import flet as ft
 
-def home_view(page, moradores, abrir_perfil):
+def home_view(page, moradores, abrir_perfil, abrir_config):
     lista = ft.Column(
         alignment=ft.MainAxisAlignment.START,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -48,26 +48,22 @@ def home_view(page, moradores, abrir_perfil):
         card.on_hover = on_hover
         lista.controls.append(card)
 
-    # Container centralizado
+    # Container centralizado com scroll
     lista_container = ft.Container(
-        content=lista,
+        content=ft.Column([lista], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.START),
         alignment=ft.alignment.top_center,
         padding=20,
         expand=True,
     )
 
-    # Scroll vertical suave
+    # Fundo da página
     main_container = ft.Container(
-        content=ft.ListView(
-            controls=[lista_container],
-            expand=True,
-            spacing=10,
-            padding=20,
-        ),
+        content=lista_container,
         bgcolor=ft.Colors.GREY_100,
         expand=True,
     )
 
+    # View principal
     return ft.View(
         route="/",
         controls=[
@@ -75,6 +71,13 @@ def home_view(page, moradores, abrir_perfil):
                 title=ft.Text("Gestão de Condomínio", size=22, weight=ft.FontWeight.BOLD),
                 center_title=True,
                 bgcolor=ft.Colors.BLUE_100,
+                actions=[
+                    ft.IconButton(
+                        icon=ft.Icons.SETTINGS,
+                        tooltip="Configurações do Condomínio",
+                        on_click=lambda e: abrir_config(),
+                    ),
+                ],
             ),
             main_container,
         ],

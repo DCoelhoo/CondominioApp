@@ -60,17 +60,24 @@ def perfil_view(page, morador, moradores, home_view):
         transacoes_list.update()
 
     def apagar_transacao(index):
-        if index < len(morador["transacoes"]):
-            morador["saldo"] -= morador["transacoes"][index]["valor"]
-            del morador["transacoes"][index]
-            salvar_dados(moradores)
-            saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
-            saldo_text.color = "green" if morador["saldo"] >= 0 else "red"
-            saldo_text.update()  # 👈 atualiza saldo no ecrã
-            render_transacoes()
-            page.snack_bar = ft.SnackBar(ft.Text("Transação apagada."))
-            page.snack_bar.open = True
-            page.update()
+        morador["saldo"] -= morador["transacoes"][index]["valor"]
+        del morador["transacoes"][index]
+
+        # ✅ Corrige possíveis -0.0€
+        if abs(morador["saldo"]) < 0.005:
+            morador["saldo"] = 0.0
+
+        salvar_dados(moradores)
+
+        saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
+        saldo_text.color = "green" if morador["saldo"] >= 0 else "red"
+        saldo_text.update()
+
+        render_transacoes()
+
+        page.snack_bar = ft.SnackBar(ft.Text("Transação apagada."))
+        page.snack_bar.open = True
+        page.update()
 
     # ---------- ADICIONAR TRANSAÇÃO ----------
     tipo_dropdown = ft.Dropdown(
@@ -102,13 +109,20 @@ def perfil_view(page, morador, moradores, home_view):
 
         morador["transacoes"].append(nova_transacao)
         morador["saldo"] += valor
+
+        # ✅ Corrige possíveis -0.0€
+        if abs(morador["saldo"]) < 0.005:
+            morador["saldo"] = 0.0
+
         salvar_dados(moradores)
 
         saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
         saldo_text.color = "green" if morador["saldo"] >= 0 else "red"
-        saldo_text.update()  # 👈 força atualização do texto
+        saldo_text.update()
+
         valor_field.value = ""
         render_transacoes()
+
         page.snack_bar = ft.SnackBar(ft.Text("Transação adicionada."))
         page.snack_bar.open = True
         page.update()

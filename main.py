@@ -2,6 +2,8 @@ import flet as ft
 from controllers.data_manager import carregar_dados
 from ui.home_view import home_view
 from ui.perfil_view import perfil_view
+from ui.config_view import config_view
+
 
 
 def main(page: ft.Page):
@@ -23,8 +25,14 @@ def main(page: ft.Page):
     # Função que atualiza a página principal (refresh)
     def carregar_home():
         page.views.clear()
-        page.views.append(home_view(page, moradores, abrir_perfil))
+        page.views.append(home_view(page, moradores, abrir_perfil, abrir_config))
         page.go("/")
+
+    
+    def abrir_config():
+        page.views.clear()
+        page.views.append(config_view(page, lambda p=page: home_view(p, moradores, abrir_perfil, abrir_config)))
+        page.go("/config")
 
     # Carrega a home ao iniciar
     carregar_home()

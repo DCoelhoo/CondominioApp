@@ -1,0 +1,11 @@
+{
+    "nome_condominio": "Condomínio de Massamá",
+    "morada": "Praceta Dona Leonor Teles",
+    "codigo_postal": "2605-010",
+    "localidade": "Massamá-Belas",
+    "nif": "123456789",
+    "telefone": "210113973",
+    "email": "dormireina@gmail.com",
+    "logo": "config/logo.png",
+    "assinatura": "config/assinatura.png"
+}

@@ -1,6 +1,9 @@
 import flet as ft
 from datetime import date
 from controllers.data_manager import carregar_dados, salvar_dados
+from utils.pdf_generator import gerar_recibo
+import webbrowser
+
 
 
 def main(page: ft.Page):
@@ -111,6 +114,32 @@ def main(page: ft.Page):
             atualizar_transacoes()
             page.update()
 
+        # -------------------- GERAR RECIBO --------------------
+        mes_field = ft.TextField(label="Mês (1-12)", width=120)
+        ano_field = ft.TextField(label="Ano (YYYY)", value=str(date.today().year), width=150)
+
+        def gerar_pdf(e):
+            try:
+                mes = int(mes_field.value)
+                ano = int(ano_field.value)
+            except ValueError:
+                page.snack_bar = ft.SnackBar(ft.Text("Mês/Ano inválidos"))
+                page.snack_bar.open = True
+                page.update()
+                return
+
+            transacoes_mes = [
+                t for t in morador["transacoes"]
+                if t["data"].startswith(f"{ano}-{mes:02d}")
+            ]
+
+            caminho = gerar_recibo(morador, transacoes_mes, mes, ano)
+
+            webbrowser.open(f"file://{caminho}")
+            page.snack_bar = ft.SnackBar(ft.Text(f"Recibo gerado: {caminho}"))
+            page.snack_bar.open = True
+            page.update()
+
         # -------------------- GUARDAR PERFIL --------------------
         def guardar_edicao(e):
             morador["nome"] = nome_field.value.strip() or "—"
@@ -133,7 +162,7 @@ def main(page: ft.Page):
                     leading=ft.IconButton(icon=ft.Icons.ARROW_BACK, on_click=voltar),
                 ),
                 ft.Container(
-                    content=ft.Column(
+                    content=ft.Column(  
                         [
                             ft.Text("Dados do Morador", size=18, weight=ft.FontWeight.BOLD),
                             nome_field,
@@ -145,6 +174,9 @@ def main(page: ft.Page):
                             ft.Divider(),
                             ft.Text("Adicionar Transação", size=18, weight=ft.FontWeight.BOLD),
                             ft.Row([tipo_dropdown, valor_field, data_field, ft.ElevatedButton("Adicionar", on_click=adicionar_transacao)]),
+                            ft.Divider(),
+                            ft.Text("Gerar Recibo Mensal", size=18, weight=ft.FontWeight.BOLD),
+                            ft.Row([mes_field, ano_field, ft.ElevatedButton("Gerar PDF", on_click=gerar_pdf)]),
                             ft.Divider(),
                             ft.Text("Histórico de Transações", size=18, weight=ft.FontWeight.BOLD),
                             transacoes_list,

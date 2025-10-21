@@ -15,8 +15,9 @@ dist/
 *.spec
 
 # Dados locais
-data/*.json
-!data/moradores_exemplo.json  # mantém um exemplo se quiseres
+data/moradores.json
+
+recibos/*.pdf
 
 # Configs de IDE
 .vscode/

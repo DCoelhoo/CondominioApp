@@ -1,0 +1,142 @@
+[
+    {
+        "id": 1,
+        "nome": "Diogo",
+        "apartamento": "RC-A",
+        "nif": "123456789",
+        "email": "teste@gmail.com",
+        "telemovel": "923232323",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 2,
+        "nome": "João",
+        "apartamento": "RC-B",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 3,
+        "nome": "—",
+        "apartamento": "1ºA",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 4,
+        "nome": "—",
+        "apartamento": "1ºB",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 5,
+        "nome": "—",
+        "apartamento": "2ºA",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 6,
+        "nome": "—",
+        "apartamento": "2ºB",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 7,
+        "nome": "—",
+        "apartamento": "3ºA",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 8,
+        "nome": "—",
+        "apartamento": "3ºB",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 9,
+        "nome": "—",
+        "apartamento": "4ºA",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 10,
+        "nome": "—",
+        "apartamento": "4ºB",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 11,
+        "nome": "—",
+        "apartamento": "5ºA",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 12,
+        "nome": "—",
+        "apartamento": "5ºB",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 13,
+        "nome": "—",
+        "apartamento": "6ºA",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    },
+    {
+        "id": 14,
+        "nome": "—",
+        "apartamento": "6ºB",
+        "nif": "",
+        "email": "",
+        "telemovel": "",
+        "saldo": 0.0,
+        "transacoes": []
+    }
+]

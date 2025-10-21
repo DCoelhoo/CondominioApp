@@ -6,8 +6,29 @@
         "nif": "123456789",
         "email": "teste@gmail.com",
         "telemovel": "923232323",
-        "saldo": 0.0,
-        "transacoes": []
+        "saldo": -75.0,
+        "transacoes": [
+            {
+                "data": "2025-10-21",
+                "tipo": "despesa",
+                "valor": -50.0
+            },
+            {
+                "data": "2025-10-21",
+                "tipo": "pagamento",
+                "valor": 100.0
+            },
+            {
+                "data": "2025-10-20",
+                "tipo": "pagamento",
+                "valor": 25.0
+            },
+            {
+                "data": "2025-10-22",
+                "tipo": "despesa",
+                "valor": -150.0
+            }
+        ]
     },
     {
         "id": 2,

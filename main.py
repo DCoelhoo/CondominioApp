@@ -1,11 +1,12 @@
 import flet as ft
+from datetime import date
 from controllers.data_manager import carregar_dados, salvar_dados
 
 
 def main(page: ft.Page):
     page.title = "Gestão de Condomínio"
-    page.window_width = 900
-    page.window_height = 600
+    page.window_width = 950
+    page.window_height = 650
     page.theme_mode = ft.ThemeMode.LIGHT
     page.vertical_alignment = ft.MainAxisAlignment.START
 
@@ -22,7 +23,7 @@ def main(page: ft.Page):
                 ft.ElevatedButton(
                     text=f"{morador['apartamento']} — {morador['nome'] if morador['nome'] != '—' else '(sem nome)'}  |  Saldo: {morador['saldo']:.2f}€",
                     on_click=lambda e, m=morador: abrir_perfil(m),
-                    width=500,
+                    width=550,
                 )
             )
 
@@ -42,23 +43,82 @@ def main(page: ft.Page):
     # Página de perfil
     # ---------------------------------------------------------
     def abrir_perfil(morador):
-        # limpa todas as views anteriores (para não herdar AppBar)
         page.views.clear()
 
+        # campos de perfil
         nome_field = ft.TextField(label="Nome", value=morador.get("nome", ""))
         nif_field = ft.TextField(label="NIF", value=morador.get("nif", ""))
         email_field = ft.TextField(label="Email", value=morador.get("email", ""))
         tel_field = ft.TextField(label="Telemóvel", value=morador.get("telemovel", ""))
         saldo_text = ft.Text(f"Saldo atual: {morador['saldo']:.2f}€", size=16, weight=ft.FontWeight.BOLD)
 
+        # -------------------- HISTÓRICO DE TRANSAÇÕES --------------------
+        transacoes_list = ft.Column(scroll=ft.ScrollMode.AUTO)
+
+        def atualizar_transacoes():
+            transacoes_list.controls.clear()
+            if not morador["transacoes"]:
+                transacoes_list.controls.append(ft.Text("Sem transações registadas."))
+            else:
+                for t in sorted(morador["transacoes"], key=lambda x: x["data"], reverse=True):
+                    cor = "green" if t["valor"] > 0 else "red"
+                    transacoes_list.controls.append(
+                        ft.Row(
+                            [
+                                ft.Text(t["data"], width=100),
+                                ft.Text(t["tipo"].capitalize(), width=120),
+                                ft.Text(f"{t['valor']:.2f}€", color=cor, width=100),
+                            ]
+                        )
+                    )
+            page.update()
+
+        atualizar_transacoes()
+
+        # -------------------- ADICIONAR TRANSAÇÃO --------------------
+        tipo_dropdown = ft.Dropdown(
+            label="Tipo",
+            options=[ft.dropdown.Option("pagamento"), ft.dropdown.Option("despesa")],
+            value="pagamento",
+            width=200,
+        )
+        valor_field = ft.TextField(label="Valor (€)", width=150)
+        data_field = ft.TextField(label="Data (YYYY-MM-DD)", value=str(date.today()), width=180)
+
+        def adicionar_transacao(e):
+            try:
+                valor = float(valor_field.value)
+            except ValueError:
+                page.snack_bar = ft.SnackBar(ft.Text("Valor inválido."))
+                page.snack_bar.open = True
+                page.update()
+                return
+
+            if tipo_dropdown.value == "despesa":
+                valor = -abs(valor)
+
+            nova_transacao = {
+                "data": data_field.value.strip(),
+                "tipo": tipo_dropdown.value,
+                "valor": valor,
+            }
+
+            morador["transacoes"].append(nova_transacao)
+            morador["saldo"] += valor
+            salvar_dados(moradores)
+            saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
+            valor_field.value = ""
+            atualizar_transacoes()
+            page.update()
+
+        # -------------------- GUARDAR PERFIL --------------------
         def guardar_edicao(e):
             morador["nome"] = nome_field.value.strip() or "—"
             morador["nif"] = nif_field.value.strip()
             morador["email"] = email_field.value.strip()
             morador["telemovel"] = tel_field.value.strip()
-
             salvar_dados(moradores)
-            page.go("/")  # volta para a principal
+            page.go("/")
 
         def voltar(e):
             page.views.clear()
@@ -75,13 +135,21 @@ def main(page: ft.Page):
                 ft.Container(
                     content=ft.Column(
                         [
+                            ft.Text("Dados do Morador", size=18, weight=ft.FontWeight.BOLD),
                             nome_field,
                             nif_field,
                             email_field,
                             tel_field,
                             ft.Divider(),
                             saldo_text,
-                            ft.ElevatedButton("Guardar alterações", on_click=guardar_edicao),
+                            ft.Divider(),
+                            ft.Text("Adicionar Transação", size=18, weight=ft.FontWeight.BOLD),
+                            ft.Row([tipo_dropdown, valor_field, data_field, ft.ElevatedButton("Adicionar", on_click=adicionar_transacao)]),
+                            ft.Divider(),
+                            ft.Text("Histórico de Transações", size=18, weight=ft.FontWeight.BOLD),
+                            transacoes_list,
+                            ft.Divider(),
+                            ft.ElevatedButton("Guardar Alterações", on_click=guardar_edicao),
                         ],
                         spacing=10,
                         scroll=ft.ScrollMode.AUTO,

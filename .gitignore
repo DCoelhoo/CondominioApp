@@ -19,6 +19,8 @@ data/moradores.json
 
 recibos/*.pdf
 
+config/*.png
+
 # Configs de IDE
 .vscode/
 .idea/

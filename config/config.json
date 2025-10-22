@@ -6,6 +6,8 @@
     "nif": "123456789",
     "telefone": "210113973",
     "email": "dormireina@gmail.com",
-    "logo": "config/logo.png",
-    "assinatura": "config/assinatura.png"
+    "logo": "config/icon.png",
+    "assinatura": "config/assinatura.png",
+    "ultimo_recibo": 1,
+    "numero_recibo": 6
 }

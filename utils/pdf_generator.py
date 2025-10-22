@@ -5,20 +5,26 @@ from reportlab.platypus import (
     SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 )
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.utils import ImageReader
 from datetime import datetime
 import os
-from controllers.config_manager import carregar_config
+from controllers.config_manager import carregar_config, guardar_config
 
 
 def gerar_recibo(morador, transacoes_mes, mes, ano):
     config = carregar_config()
+
+    # --- Atualizar número do recibo no config.json ---
+    numero_recibo = config.get("numero_recibo", 0) + 1
+    config["numero_recibo"] = numero_recibo
+    guardar_config(config)
 
     pasta_recibos = "recibos"
     os.makedirs(pasta_recibos, exist_ok=True)
 
     caminho_pdf = os.path.join(
         pasta_recibos,
-        f"recibo_{morador['apartamento'].replace(' ', '_')}_{ano}_{mes:02d}.pdf"
+        f"recibo_{morador['apartamento'].replace(' ', '_')}_{numero_recibo:04d}.pdf"
     )
 
     doc = SimpleDocTemplate(
@@ -37,7 +43,7 @@ def gerar_recibo(morador, transacoes_mes, mes, ano):
         "Titulo",
         parent=estilos["Heading1"],
         fontSize=14,
-        alignment=1,  # Centralizado na página
+        alignment=1,  # centrado
         spaceAfter=12,
         leading=16
     )
@@ -49,33 +55,38 @@ def gerar_recibo(morador, transacoes_mes, mes, ano):
         leading=13,
     )
 
-    estilo_admin = ParagraphStyle(
-        "Admin",
-        parent=estilos["Normal"],
-        fontSize=10,
-        leading=13,
-        alignment=2  # Alinhado à direita
-    )
-
-    # ---------- CABEÇALHO ----------
+    # ---------- LOGO À ESQUERDA ----------
     logo_path = config.get("logo")
+    logo_width = 2.5 * cm
+    logo_height = None
+
     if logo_path and os.path.exists(logo_path):
-        logo = Image(logo_path, width=2.5 * cm, height=2.5 * cm, kind="proportional")
+        try:
+            img = ImageReader(logo_path)
+            iw, ih = img.getSize()
+            aspect = ih / float(iw)
+            logo_height = logo_width * aspect
+            logo = Image(logo_path, width=logo_width, height=logo_height)
+        except Exception:
+            logo = Paragraph("<b>LOGO</b>", estilos["Normal"])
     else:
         logo = Paragraph("<b>LOGO</b>", estilos["Normal"])
 
-    # Tabela só com o logo à esquerda
-    cabecalho = Table([[logo]], colWidths=[3 * cm])
-    cabecalho.setStyle(TableStyle([
+    tabela_logo = Table([[logo]], colWidths=[A4[0] - 4 * cm])
+    tabela_logo.setStyle(TableStyle([
         ("ALIGN", (0, 0), (-1, -1), "LEFT"),
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
     ]))
-    elementos.append(cabecalho)
+    elementos.append(tabela_logo)
+    elementos.append(Spacer(1, 0.3 * cm))
 
-    # Título e data centrados em toda a página
+    # ---------- TÍTULO CENTRADO ----------
     elementos.append(Paragraph("<b>Recibo de Condomínio</b>", estilo_titulo))
+
+    # ---------- DATA E NÚMERO ----------
     elementos.append(Paragraph(f"Data de emissão: {datetime.now().strftime('%d-%m-%Y')}", estilo_info))
-    elementos.append(Spacer(1, 0.7 * cm))
+    elementos.append(Paragraph(f"Recibo n.º: <b>{numero_recibo:04d}</b>", estilo_info))
+    elementos.append(Spacer(1, 0.5 * cm))
 
     # ---------- BLOCO CONDOMÍNIO E MORADOR ----------
     bloco_condominio = f"""
@@ -132,9 +143,6 @@ def gerar_recibo(morador, transacoes_mes, mes, ano):
         ("ALIGN", (2, 1), (-1, -1), "RIGHT"),
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("FONTNAME", (1, -1), (-1, -1), "Helvetica-Bold"),
-        ("BOTTOMPADDING", (0, 0), (-1, 0), 5),
-        ("TOPPADDING", (0, 0), (-1, -1), 4),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
     ]))
     elementos.append(tabela)
     elementos.append(Spacer(1, 1 * cm))
@@ -144,28 +152,55 @@ def gerar_recibo(morador, transacoes_mes, mes, ano):
     elementos.append(Spacer(1, 1.2 * cm))
 
     # ---------- ASSINATURA À DIREITA ----------
-    assinatura_path = config.get("assinatura")
-    assinatura_table_data = []
+    largura_total, _ = A4
+    margem_direita = 2 * cm
+    largura_bloco = 7 * cm
+    offset_extra = -1 * cm  # deslocar mais para a direita (colado mesmo ao limite)
 
-    assinatura_table_data.append([Paragraph("<b>O Administrador</b>", estilo_admin)])
+    assinatura_path = config.get("assinatura")
+
+    # Conteúdo do bloco (alinhado à direita internamente)
+    conteudo_assinatura = []
+    conteudo_assinatura.append(Paragraph("O Administrador", ParagraphStyle(
+        "RightAligned",
+        parent=estilo_info,
+        alignment=2  # 2 = RIGHT
+    )))
+    conteudo_assinatura.append(Spacer(1, 0.3 * cm))
 
     if assinatura_path and os.path.exists(assinatura_path):
-        assinatura_img = Image(assinatura_path, width=4 * cm, height=2 * cm, kind="proportional")
-        assinatura_table_data.append([assinatura_img])
-        assinatura_table_data.append([Spacer(1, 0.2 * cm)])
+        assinatura_img = Image(assinatura_path, width=4 * cm, height=2 * cm)
+        conteudo_assinatura.append(assinatura_img)
+    else:
+        conteudo_assinatura.append(Spacer(1, 2 * cm))
 
-    assinatura_table_data.append([
-        Paragraph(f"<b>{config.get('nome_condominio', 'Condomínio')}</b>", estilo_admin)
-    ])
+    conteudo_assinatura.append(Spacer(1, 0.3 * cm))
+    conteudo_assinatura.append(Paragraph(config.get("nome_condominio", "Condomínio"), ParagraphStyle(
+        "RightAligned",
+        parent=estilo_info,
+        alignment=2
+    )))
 
-    assinatura_table = Table(assinatura_table_data, colWidths=[16 * cm])  # move tudo à direita
-    assinatura_table.setStyle(TableStyle([
+    # Tabela do bloco (conteúdo totalmente à direita)
+    tabela_bloco = Table([[c] for c in conteudo_assinatura], colWidths=[largura_bloco])
+    tabela_bloco.setStyle(TableStyle([
         ("ALIGN", (0, 0), (-1, -1), "RIGHT"),
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("TOPPADDING", (0, 0), (-1, -1), 2),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
     ]))
-    elementos.append(assinatura_table)
+
+    # Layout final (colado à direita da folha)
+    assinatura_layout = Table(
+        [[Spacer(1, 0), tabela_bloco]],
+        colWidths=[largura_total - largura_bloco - margem_direita + offset_extra, largura_bloco],
+    )
+    assinatura_layout.setStyle(TableStyle([
+        ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+    ]))
+
+    elementos.append(assinatura_layout)
 
     doc.build(elementos)
     return caminho_pdf

@@ -31,7 +31,7 @@ def main(page: ft.Page):
     
     def abrir_config():
         page.views.clear()
-        page.views.append(config_view(page, lambda p=page: home_view(p, moradores, abrir_perfil, abrir_config)))
+        page.views.append(config_view(page, carregar_home))
         page.go("/config")
 
     # Carrega a home ao iniciar

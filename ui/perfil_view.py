@@ -2,7 +2,7 @@ import flet as ft
 from datetime import date
 import webbrowser
 from utils.pdf_generator import gerar_recibo
-from controllers.data_manager import salvar_dados
+from controllers.data_manager import guardar_dados
 
 def perfil_view(page, morador, moradores, home_view):
     # ---------- CAMPOS DE PERFIL ----------
@@ -67,7 +67,7 @@ def perfil_view(page, morador, moradores, home_view):
         if abs(morador["saldo"]) < 0.005:
             morador["saldo"] = 0.0
 
-        salvar_dados(moradores)
+        guardar_dados(moradores)
 
         saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
         saldo_text.color = "green" if morador["saldo"] >= 0 else "red"
@@ -114,7 +114,7 @@ def perfil_view(page, morador, moradores, home_view):
         if abs(morador["saldo"]) < 0.005:
             morador["saldo"] = 0.0
 
-        salvar_dados(moradores)
+        guardar_dados(moradores)
 
         saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
         saldo_text.color = "green" if morador["saldo"] >= 0 else "red"
@@ -154,7 +154,7 @@ def perfil_view(page, morador, moradores, home_view):
         morador["nif"] = nif_field.value.strip()
         morador["email"] = email_field.value.strip()
         morador["telemovel"] = tel_field.value.strip()
-        salvar_dados(moradores)
+        guardar_dados(moradores)
 
         page.snack_bar = ft.SnackBar(ft.Text("Alterações guardadas com sucesso!"))
         page.snack_bar.open = True

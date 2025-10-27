@@ -25,7 +25,7 @@ def carregar_config():
         "email": "",
         "logo": "",
         "assinatura": "",
-        "numero_recibo": 0  # Novo campo
+        "numero_recibo": 0  
     }
 
     # Garante que todas as chaves existem

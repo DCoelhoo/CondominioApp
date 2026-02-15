@@ -1,7 +1,4 @@
 {
   "latest_version": "1.0.0",
-  "windows": {
-    "url": "https://raw.githubusercontent.com/<user>/<repo>/<branch>/updates/latest.json",
-    "sha256": "COLOQUE_SHA256_AQUI"
-  }
+  "windows": { "url": "", "sha256": "" }
 }

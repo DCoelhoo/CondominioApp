@@ -51,7 +51,7 @@ def home_view(page, moradores, abrir_perfil, abrir_config):
     # Container centralizado com scroll
     lista_container = ft.Container(
         content=ft.Column([lista], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.START),
-        alignment=ft.alignment.top_center,
+        alignment=ft.Alignment.TOP_CENTER,
         padding=20,
         expand=True,
     )

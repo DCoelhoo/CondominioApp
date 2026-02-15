@@ -4,12 +4,18 @@ import webbrowser
 from utils.pdf_generator import gerar_recibo
 from controllers.data_manager import guardar_dados
 
-def perfil_view(page, morador, moradores, home_view):
+def perfil_view(page, morador, moradores, carregar_home):
+
     # ---------- CAMPOS DE PERFIL ----------
     nome_field = ft.TextField(label="Nome", value=morador.get("nome", ""), width=350)
     nif_field = ft.TextField(label="NIF", value=morador.get("nif", ""), width=250)
     email_field = ft.TextField(label="Email", value=morador.get("email", ""), width=350)
     tel_field = ft.TextField(label="Telemóvel", value=morador.get("telemovel", ""), width=250)
+
+    garagem_check = ft.Checkbox(
+    label="Tem garagem",
+    value=morador.get("tem_garagem", False),
+)
 
     saldo_text = ft.Text(
         f"Saldo atual: {morador['saldo']:.2f}€",
@@ -63,7 +69,7 @@ def perfil_view(page, morador, moradores, home_view):
         morador["saldo"] -= morador["transacoes"][index]["valor"]
         del morador["transacoes"][index]
 
-        # ✅ Corrige possíveis -0.0€
+        # Corrige possíveis -0.0€
         if abs(morador["saldo"]) < 0.005:
             morador["saldo"] = 0.0
 
@@ -110,7 +116,7 @@ def perfil_view(page, morador, moradores, home_view):
         morador["transacoes"].append(nova_transacao)
         morador["saldo"] += valor
 
-        # ✅ Corrige possíveis -0.0€
+        # Corrige possíveis -0.0€
         if abs(morador["saldo"]) < 0.005:
             morador["saldo"] = 0.0
 
@@ -154,25 +160,19 @@ def perfil_view(page, morador, moradores, home_view):
         morador["nif"] = nif_field.value.strip()
         morador["email"] = email_field.value.strip()
         morador["telemovel"] = tel_field.value.strip()
+        morador["tem_garagem"] = bool(garagem_check.value)
         guardar_dados(moradores)
 
         page.snack_bar = ft.SnackBar(ft.Text("Alterações guardadas com sucesso!"))
         page.snack_bar.open = True
+        page.update()
 
-        # Voltar à home
-        page.views.clear()
-        page.views.append(home_view(page, moradores, abrir_perfil))
-        page.go("/")
+        carregar_home()
 
     def voltar(e):
-        page.views.clear()
-        page.views.append(home_view(page, moradores, abrir_perfil))
-        page.go("/")
+        carregar_home()
 
-    def abrir_perfil(m):
-        page.views.clear()
-        page.views.append(perfil_view(page, m, moradores, home_view))
-        page.go("/perfil")
+
 
     # ---------- VISUAL ----------
     perfil_page = ft.View(
@@ -199,6 +199,7 @@ def perfil_view(page, morador, moradores, home_view):
                                     ft.Text("Dados do Morador", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_GREY_700),
                                     ft.Row([nome_field, nif_field]),
                                     ft.Row([email_field, tel_field]),
+                                    ft.Row([garagem_check])
                                 ],
                                 spacing=10,
                             ),
@@ -254,10 +255,6 @@ def perfil_view(page, morador, moradores, home_view):
             ),
         ],
     )
-
-    # ✅ Adiciona a view normalmente
-    page.add(perfil_page)
-    page.update()
 
     # ✅ Renderiza as transações de forma segura após o ciclo atual
     async def post_mount():

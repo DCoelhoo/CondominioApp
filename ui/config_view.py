@@ -18,7 +18,6 @@ def config_view(page, carregar_home):
     numero_recibo = ft.TextField(
         label="Próximo número de recibo",
         value=str(config.get("numero_recibo", 0)),
-        helper_text="O próximo recibo gerado usará este número.",
         keyboard_type=ft.KeyboardType.NUMBER
     )
 
@@ -84,7 +83,7 @@ def config_view(page, carregar_home):
             ft.AppBar(title=ft.Text("Configurações"), bgcolor=ft.Colors.BLUE_100, center_title=True),
             ft.Container(
                 content=conteudo,
-                alignment=ft.alignment.top_center,
+                alignment=ft.Alignment.TOP_CENTER,
                 expand=True,
                 padding=20,
             ),

@@ -18,8 +18,7 @@ def main(page: ft.Page):
     # Função chamada quando se abre o perfil
     def abrir_perfil(morador):
         page.views.clear()
-        perfil = perfil_view(page, morador, moradores, home_view)
-        page.views.append(perfil)
+        page.views.append(perfil_view(page, morador, moradores, carregar_home))
         page.go("/perfil")
 
     # Função que atualiza a página principal (refresh)

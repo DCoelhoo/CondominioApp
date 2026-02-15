@@ -13,6 +13,10 @@ from controllers.config_manager import carregar_config, guardar_config
 
 def gerar_recibo(morador, transacoes_mes, mes, ano):
     config = carregar_config()
+    transacoes_mes = [
+        t for t in transacoes_mes
+        if (t.get("tipo") == "pagamento") or (float(t.get("valor", 0)) > 0)
+    ]
 
     # --- Atualizar número do recibo no config.json ---
     numero_recibo = config.get("numero_recibo", 0) + 1
@@ -124,12 +128,12 @@ def gerar_recibo(morador, transacoes_mes, mes, ano):
     elementos.append(Spacer(1, 0.8 * cm))
 
     # ---------- TABELA DE TRANSAÇÕES ----------
-    dados_tabela = [["Data", "Tipo", "Valor (€)"]]
+    dados_tabela = [["Data", "Descrição", "Valor (€)"]]
     total = 0.0
     for t in sorted(transacoes_mes, key=lambda x: x["data"]):
         dados_tabela.append([
             t["data"],
-            t["tipo"].capitalize(),
+            (t.get("descricao") or "").capitalize(),
             f"{t['valor']:.2f}"
         ])
         total += t["valor"]

@@ -9,5 +9,7 @@
     "logo": "config/icon.png",
     "assinatura": "config/assinatura.png",
     "ultimo_recibo": 1,
-    "numero_recibo": 6
+    "numero_recibo": 6,
+    "quota_base": 30.0,
+    "extra_garagem": 5.0
 }

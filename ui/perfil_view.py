@@ -52,7 +52,7 @@ def perfil_view(page, morador, moradores, carregar_home):
                         content=ft.Row(
                             [
                                 ft.Text(transacao["data"], width=100),
-                                ft.Text(transacao["tipo"].capitalize(), width=150),
+                                ft.Text(transacao.get("descricao", "") or "—", width=300),
                                 ft.Text(f"{transacao['valor']:.2f}€", color=cor, width=100),
                                 btn_apagar,
                             ],
@@ -88,12 +88,14 @@ def perfil_view(page, morador, moradores, carregar_home):
     # ---------- ADICIONAR TRANSAÇÃO ----------
     tipo_dropdown = ft.Dropdown(
         label="Tipo",
-        options=[ft.dropdown.Option("pagamento"), ft.dropdown.Option("despesa")],
+        options=[ft.dropdown.Option("Pagamento"), ft.dropdown.Option("Despesa")],
         value="pagamento",
         width=180,
     )
     valor_field = ft.TextField(label="Valor (€)", width=150)
     data_field = ft.TextField(label="Data", value=str(date.today()), width=150)
+    descricao_field = ft.TextField(label="Descrição", width=300)
+
 
     def adicionar_transacao(e):
         try:
@@ -111,6 +113,7 @@ def perfil_view(page, morador, moradores, carregar_home):
             "data": data_field.value.strip(),
             "tipo": tipo_dropdown.value,
             "valor": valor,
+            "descricao": (descricao_field.value or "").strip(),
         }
 
         morador["transacoes"].append(nova_transacao)
@@ -147,7 +150,11 @@ def perfil_view(page, morador, moradores, carregar_home):
             page.update()
             return
 
-        transacoes_mes = [t for t in morador["transacoes"] if t["data"].startswith(f"{ano}-{mes:02d}")]
+        transacoes_mes = [
+            t for t in morador["transacoes"]
+            if t.get("data", "").startswith(f"{ano}-{mes:02d}")
+            and t.get("tipo") == "pagamento"
+        ]
         caminho = gerar_recibo(morador, transacoes_mes, mes, ano)
         webbrowser.open(f"file://{caminho}")
         page.snack_bar = ft.SnackBar(ft.Text(f"Recibo gerado: {caminho}"))
@@ -177,6 +184,8 @@ def perfil_view(page, morador, moradores, carregar_home):
     # ---------- VISUAL ----------
     perfil_page = ft.View(
         route="/perfil",
+        padding=0,
+        spacing=0,
         controls=[
             ft.AppBar(
                 title=ft.Text(f"Perfil — {morador['apartamento']}"),
@@ -212,7 +221,7 @@ def perfil_view(page, morador, moradores, carregar_home):
                                 [
                                     saldo_text,
                                     ft.Text("Adicionar Transação", size=20, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_GREY_700),
-                                    ft.Row([tipo_dropdown, valor_field, data_field, ft.ElevatedButton("Adicionar", on_click=adicionar_transacao)]),
+                                    ft.Row([tipo_dropdown, valor_field, data_field, descricao_field, ft.ElevatedButton("Adicionar", on_click=adicionar_transacao)]),
                                 ],
                                 spacing=10,
                             ),

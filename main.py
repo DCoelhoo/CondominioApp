@@ -8,6 +8,8 @@ from ui.config_view import config_view
 
 def main(page: ft.Page):
     page.title = "Gestão de Condomínio"
+    page.padding = 0
+    page.spacing = 0
     page.window_width = 950
     page.window_height = 650
     page.theme_mode = ft.ThemeMode.LIGHT

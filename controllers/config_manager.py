@@ -25,7 +25,9 @@ def carregar_config():
         "email": "",
         "logo": "",
         "assinatura": "",
-        "numero_recibo": 0  
+        "numero_recibo": 0,
+        "quota_base": 30.0,
+        "extra_garagem": 0.0,
     }
 
     # Garante que todas as chaves existem

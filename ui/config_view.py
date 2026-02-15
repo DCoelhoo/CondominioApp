@@ -14,12 +14,9 @@ def config_view(page, carregar_home):
     email = ft.TextField(label="Email", value=config.get("email", ""))
     logo = ft.TextField(label="Caminho do Logo", value=config.get("logo", ""))
     assinatura = ft.TextField(label="Caminho da Assinatura", value=config.get("assinatura", ""))
-
-    numero_recibo = ft.TextField(
-        label="Próximo número de recibo",
-        value=str(config.get("numero_recibo", 0)),
-        keyboard_type=ft.KeyboardType.NUMBER
-    )
+    numero_recibo = ft.TextField(label="Próximo número de recibo", value=str(config.get("numero_recibo", 0)), keyboard_type=ft.KeyboardType.NUMBER)
+    quota_base = ft.TextField(label="Quota base (€)", value=str(config.get("quota_base", 30.0)), keyboard_type=ft.KeyboardType.NUMBER)
+    extra_garagem = ft.TextField(label="Extra garagem (€)", value=str(config.get("extra_garagem", 0.0)), keyboard_type=ft.KeyboardType.NUMBER)
 
     # Guardar alterações
     def guardar_alteracoes(e):
@@ -36,6 +33,16 @@ def config_view(page, carregar_home):
             config["numero_recibo"] = int(numero_recibo.value)
         except ValueError:
             config["numero_recibo"] = 0
+
+        try:
+            config["quota_base"] = float(quota_base.value.replace(",", "."))
+        except ValueError:
+            config["quota_base"] = 30.0
+
+        try:
+            config["extra_garagem"] = float(extra_garagem.value.replace(",", "."))
+        except ValueError:
+            config["extra_garagem"] = 0.0
 
         guardar_config(config)
         page.snack_bar = ft.SnackBar(ft.Text("Configurações guardadas com sucesso!"), open=True)
@@ -69,6 +76,9 @@ def config_view(page, carregar_home):
             ft.Divider(),
             numero_recibo,
             ft.Divider(),
+            quota_base,
+            extra_garagem,
+            ft.Divider(),
             botoes,
         ],
         scroll=ft.ScrollMode.AUTO,
@@ -79,6 +89,8 @@ def config_view(page, carregar_home):
 
     return ft.View(
         route="/config",
+        padding=0,
+        spacing=0,
         controls=[
             ft.AppBar(title=ft.Text("Configurações"), bgcolor=ft.Colors.BLUE_100, center_title=True),
             ft.Container(

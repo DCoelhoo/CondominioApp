@@ -1,5 +1,5 @@
 from controllers.config_manager import carregar_config
-from controllers.data_manager import guardar_dados
+from controllers.data_manager import guardar_moradores
 
 def lancar_quota_mensal(moradores, ano: int, mes: int):
     config = carregar_config()
@@ -35,5 +35,5 @@ def lancar_quota_mensal(moradores, ano: int, mes: int):
         m["saldo"] += valor
         adicionadas += 1
 
-    guardar_dados(moradores)
+    guardar_moradores(moradores)
     return adicionadas, ignoradas

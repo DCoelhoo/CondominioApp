@@ -1,20 +1,19 @@
 import json
-import os
+from utils.storage import get_config_path
 
-CAMINHO_CONFIG = "config/config.json"
+CAMINHO_CONFIG = get_config_path()
 
 def carregar_config():
     """Lê as configurações do ficheiro JSON, ou cria padrão se não existir."""
-    if os.path.exists(CAMINHO_CONFIG):
+    if CAMINHO_CONFIG.exists():
         try:
             with open(CAMINHO_CONFIG, "r", encoding="utf-8") as f:
                 config = json.load(f)
-        except:
+        except Exception:
             config = {}
     else:
         config = {}
 
-    # Valores padrão (incluindo contador de recibos)
     defaults = {
         "nome_condominio": "Condomínio de Massamá",
         "morada": "",
@@ -30,18 +29,15 @@ def carregar_config():
         "extra_garagem": 0.0,
     }
 
-    # Garante que todas as chaves existem
     for chave, valor in defaults.items():
         config.setdefault(chave, valor)
 
-    # Guarda de volta (caso haja novos campos)
     guardar_config(config)
-
     return config
 
 
 def guardar_config(config):
     """Guarda as configurações no ficheiro JSON."""
-    os.makedirs(os.path.dirname(CAMINHO_CONFIG), exist_ok=True)
+    CAMINHO_CONFIG.parent.mkdir(parents=True, exist_ok=True)
     with open(CAMINHO_CONFIG, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=4, ensure_ascii=False)

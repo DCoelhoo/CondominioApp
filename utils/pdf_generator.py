@@ -11,12 +11,15 @@ import os
 from controllers.config_manager import carregar_config, guardar_config
 
 
-def gerar_recibo(morador, transacoes_mes, mes, ano):
+def gerar_recibo(morador, transacoes_mes, mes, ano, caminho_destino=None):
     config = carregar_config()
     transacoes_mes = [
         t for t in transacoes_mes
         if (t.get("tipo") == "pagamento") or (float(t.get("valor", 0)) > 0)
     ]
+
+    if caminho_destino is None:
+        caminho_destino = f"recibo_{morador['apartamento']}_{ano}_{mes:02d}.pdf"
 
     # --- Atualizar número do recibo no config.json ---
     numero_recibo = config.get("numero_recibo", 0) + 1
@@ -26,10 +29,8 @@ def gerar_recibo(morador, transacoes_mes, mes, ano):
     pasta_recibos = "recibos"
     os.makedirs(pasta_recibos, exist_ok=True)
 
-    caminho_pdf = os.path.join(
-        pasta_recibos,
-        f"recibo_{morador['apartamento'].replace(' ', '_')}_{numero_recibo:04d}.pdf"
-    )
+    caminho_pdf = caminho_destino
+    os.makedirs(os.path.dirname(caminho_pdf), exist_ok=True)
 
     doc = SimpleDocTemplate(
         caminho_pdf,

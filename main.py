@@ -1,5 +1,5 @@
 import flet as ft
-from controllers.data_manager import carregar_dados
+from controllers.data_manager import carregar_moradores
 from ui.home_view import home_view
 from ui.perfil_view import perfil_view
 from ui.config_view import config_view
@@ -15,7 +15,7 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.vertical_alignment = ft.MainAxisAlignment.START
 
-    moradores = carregar_dados()
+    moradores = carregar_moradores()
 
     # Função chamada quando se abre o perfil
     def abrir_perfil(morador):

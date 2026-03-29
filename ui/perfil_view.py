@@ -1,8 +1,12 @@
+from turtle import width
+
 import flet as ft
 from datetime import date
 import webbrowser
 from utils.pdf_generator import gerar_recibo
-from controllers.data_manager import guardar_dados
+from controllers.data_manager import guardar_moradores
+from pathlib import Path
+from utils.storage import get_recibos_dir
 
 def perfil_view(page, morador, moradores, carregar_home):
 
@@ -73,7 +77,7 @@ def perfil_view(page, morador, moradores, carregar_home):
         if abs(morador["saldo"]) < 0.005:
             morador["saldo"] = 0.0
 
-        guardar_dados(moradores)
+        guardar_moradores(moradores)
 
         saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
         saldo_text.color = "green" if morador["saldo"] >= 0 else "red"
@@ -123,7 +127,7 @@ def perfil_view(page, morador, moradores, carregar_home):
         if abs(morador["saldo"]) < 0.005:
             morador["saldo"] = 0.0
 
-        guardar_dados(moradores)
+        guardar_moradores(moradores)
 
         saldo_text.value = f"Saldo atual: {morador['saldo']:.2f}€"
         saldo_text.color = "green" if morador["saldo"] >= 0 else "red"
@@ -137,8 +141,8 @@ def perfil_view(page, morador, moradores, carregar_home):
         page.update()
 
     # ---------- GERAR RECIBO ----------
-    mes_field = ft.TextField(label="Mês (1-12)", width=100)
-    ano_field = ft.TextField(label="Ano", value=str(date.today().year), width=120)
+    mes_field = ft.TextField(label="Mês (1-12)", width=150)
+    ano_field = ft.TextField(label="Ano (ex: 2024)", width=150)
 
     def gerar_pdf(e):
         try:
@@ -155,9 +159,17 @@ def perfil_view(page, morador, moradores, carregar_home):
             if t.get("data", "").startswith(f"{ano}-{mes:02d}")
             and t.get("tipo") == "pagamento"
         ]
-        caminho = gerar_recibo(morador, transacoes_mes, mes, ano)
-        webbrowser.open(f"file://{caminho}")
-        page.snack_bar = ft.SnackBar(ft.Text(f"Recibo gerado: {caminho}"))
+
+        recibos_dir = get_recibos_dir()
+        caminho_destino = recibos_dir / f"recibo_{morador['apartamento']}_{ano}_{mes:02d}.pdf"
+
+        caminho_final = gerar_recibo(morador, transacoes_mes, mes, ano, str(caminho_destino))
+
+        webbrowser.open(f"file://{caminho_final}")
+
+        page.snack_bar = ft.SnackBar(
+            ft.Text(f"Recibo guardado em: {caminho_final}")
+        )
         page.snack_bar.open = True
         page.update()
 
@@ -168,7 +180,7 @@ def perfil_view(page, morador, moradores, carregar_home):
         morador["email"] = email_field.value.strip()
         morador["telemovel"] = tel_field.value.strip()
         morador["tem_garagem"] = bool(garagem_check.value)
-        guardar_dados(moradores)
+        guardar_moradores(moradores)
 
         page.snack_bar = ft.SnackBar(ft.Text("Alterações guardadas com sucesso!"))
         page.snack_bar.open = True

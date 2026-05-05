@@ -13,9 +13,14 @@ from controllers.config_manager import carregar_config, guardar_config
 
 def gerar_recibo(morador, transacoes_mes, mes, ano, caminho_destino=None):
     config = carregar_config()
-    transacoes_mes = [
+
+    mes = int(mes)
+    ano = int(ano)
+
+    transacoes_filtradas = [
         t for t in transacoes_mes
-        if (t.get("tipo") == "pagamento") or (float(t.get("valor", 0)) > 0)
+        if datetime.strptime(t["data"], "%Y-%m-%d").month == mes
+        and datetime.strptime(t["data"], "%Y-%m-%d").year == ano
     ]
 
     if caminho_destino is None:
@@ -62,7 +67,7 @@ def gerar_recibo(morador, transacoes_mes, mes, ano, caminho_destino=None):
 
     # ---------- LOGO À ESQUERDA ----------
     logo_path = config.get("logo")
-    logo_width = 2.5 * cm
+    logo_width = 10 * cm
     logo_height = None
 
     if logo_path and os.path.exists(logo_path):
@@ -131,13 +136,17 @@ def gerar_recibo(morador, transacoes_mes, mes, ano, caminho_destino=None):
     # ---------- TABELA DE TRANSAÇÕES ----------
     dados_tabela = [["Data", "Descrição", "Valor (€)"]]
     total = 0.0
-    for t in sorted(transacoes_mes, key=lambda x: x["data"]):
+
+    for t in sorted(transacoes_filtradas, key=lambda x: x["data"]):
+        valor = float(t.get("valor", 0))
+
         dados_tabela.append([
             t["data"],
             (t.get("descricao") or "").capitalize(),
-            f"{t['valor']:.2f}"
+            f"{valor:.2f}"
         ])
-        total += t["valor"]
+
+        total += valor
 
     dados_tabela.append(["", "Total", f"{total:.2f} €"])
 

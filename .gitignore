@@ -9,10 +9,11 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Ficheiros de build / dist
-build/
+# Builds / executáveis
+*.exe
 dist/
-*.spec
+build/
+installer/
 
 # Dados locais
 data/moradores.json

@@ -110,7 +110,7 @@ def perfil_view(page, morador, moradores, carregar_home):
             page.update()
             return
 
-        if tipo_dropdown.value == "despesa":
+        if tipo_dropdown.value.lower() == "despesa":
             valor = -abs(valor)
 
         nova_transacao = {
@@ -157,7 +157,7 @@ def perfil_view(page, morador, moradores, carregar_home):
         transacoes_mes = [
             t for t in morador["transacoes"]
             if t.get("data", "").startswith(f"{ano}-{mes:02d}")
-            and t.get("tipo") == "pagamento"
+            and t.get("tipo").lower() == "pagamento"
         ]
 
         recibos_dir = get_recibos_dir()
